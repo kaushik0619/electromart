@@ -34,11 +34,25 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const loadCart = useCallback(async () => {
-    if (!user) return;
+    if (!user) {
+      setItems([]);
+      setLoading(false);
+      return;
+    }
+    
     setLoading(true);
     try {
-      const data = await api.get('/api/cart');
-      setItems(data || []);
+      const data = await api.get('/cart');
+      // Transform MongoDB _id to id for frontend
+      const transformedData = Array.isArray(data) ? data.map((item: any) => ({
+        ...item,
+        id: item._id,
+        product: {
+          ...item.product,
+          id: item.product._id
+        }
+      })) : [];
+      setItems(transformedData);
     } catch (error) {
       console.error('Failed to load cart:', error);
       setItems([]);
@@ -48,17 +62,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   useEffect(() => {
-    if (user) {
-      loadCart();
-    } else {
-      setItems([]);
-      setLoading(false);
-    }
-  }, [user, loadCart]);
+    loadCart();
+  }, [loadCart]);
 
   async function addToCart(productId: string, quantity: number = 1) {
     if (!user) throw new Error('Please login to add items to cart');
-    await api.post('/api/cart', { productId, quantity });
+    await api.post('/cart', { productId, quantity });
     await loadCart();
   }
 
@@ -67,18 +76,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
       await removeFromCart(itemId);
       return;
     }
-    await api.put(`/api/cart/${itemId}`, { quantity });
+    await api.put(`/cart/${itemId}`, { quantity });
     await loadCart();
   }
 
   async function removeFromCart(itemId: string) {
-    await api.delete(`/api/cart/${itemId}`);
+    await api.delete(`/cart/${itemId}`);
     await loadCart();
   }
 
   async function clearCart() {
     if (!user) return;
-    await api.delete('/api/cart');
+    await api.delete('/cart');
     setItems([]);
   }
 

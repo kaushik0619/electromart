@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState, ReactNode, useContext } from 'react';
 
-const API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 interface UserProfile {
   id: string;
@@ -29,7 +29,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (error) {
+          console.error('Error parsing stored user:', error);
+          logout();
+        }
       }
     }
     setLoading(false);
@@ -37,8 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function handleAuthResponse(response: Response) {
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'An error occurred.');
+      const errorData = await response.json().catch(() => ({ message: 'An error occurred' }));
+      throw new Error(errorData.message || 'Authentication failed');
     }
     const data = await response.json();
     localStorage.setItem('authToken', data.token);

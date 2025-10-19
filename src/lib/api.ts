@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
 
 interface ApiResponse<T = any> {
   data?: T;
@@ -21,14 +21,12 @@ async function handleResponse<T>(response: Response): Promise<T> {
       const errorData = await response.json();
       errorMessage = errorData.message || errorData.error || errorMessage;
     } catch {
-      // If response is not JSON, use status text
       errorMessage = response.statusText || errorMessage;
     }
     
     throw new ApiError(response.status, errorMessage);
   }
   
-  // Handle empty responses (like 204 No Content)
   if (response.status === 204) {
     return {} as T;
   }
@@ -36,7 +34,6 @@ async function handleResponse<T>(response: Response): Promise<T> {
   try {
     return await response.json();
   } catch {
-    // If response is not JSON, return empty object
     return {} as T;
   }
 }
