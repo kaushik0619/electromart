@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-     "dev:client": "vite",
+    "dev:client": "vite",
     "dev:server": "nodemon --exec tsx server/index.ts",
     "dev": "concurrently \"npm:dev:client\" \"npm:dev:server\"",
     "build": "tsc && vite build",
@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.414.0",
     "mongodb": "^6.8.0",
+    "mongoose": "^8.19.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.25.1"

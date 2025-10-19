@@ -39,7 +39,11 @@ export function Navbar({ onNavigate, currentPage }: NavbarProps) {
           {/* Left Section */}
           <div className="flex items-center gap-8">
             <button onClick={() => onNavigate('landing')} className="text-xl font-bold text-secondary">
-              TechMart
+              <img 
+      src="/logo.png" // 👈 Replace with actual path to your PNG
+      alt="ABC Accessories But Cheaper"
+      className="h-10 md:h-12" // Adjust height as needed
+    />
             </button>
             <nav className="hidden md:flex items-center gap-6">
               <button onClick={() => onNavigate('landing')} className={navLinkClasses('landing')}>Home</button>
